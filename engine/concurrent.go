@@ -1,21 +1,31 @@
 package engine
 
 import (
-	"dicuz-crawler/fetcher"
-	"dicuz-crawler/model"
-	"dicuz-crawler/persist"
 	"log"
+
+	"discuz-crawler/fetcher"
+	"discuz-crawler/model"
+	"discuz-crawler/persist"
 )
 
 type Concurrent struct {
-	Saver       persist.Saver
+	Saver       persist.Storage
 	WorkerCount int
 }
 
 func (e *Concurrent) Run(seeds ...model.Request) {
-	in := make(chan model.Request)
-	out := make(chan model.ParseResult)
-	e.Saver.Init()
+	if len(seeds) == 0 {
+		log.Printf("没有种子数据\n")
+		return
+	}
+
+	in := make(chan model.Request, 10000)
+	out := make(chan model.ParseResult, 10000)
+
+	if err := e.Saver.Init(); err != nil {
+		log.Printf("初始化存储器失败: %s\n", err.Error())
+		return
+	}
 
 	workerNum := 0
 	for i := 0; i < e.WorkerCount; i++ {
@@ -24,31 +34,34 @@ func (e *Concurrent) Run(seeds ...model.Request) {
 	}
 
 	for _, request := range seeds {
-		go func() { in <- request }()
+		in <- request
 	}
 
 	count := 0
 	for {
 		result := <-out
-		//log.Printf("result:%v", result)
 		for _, request := range result.Requests {
-			log.Printf("request:%v", request)
-			go func() { in <- request }()
+			in <- request
 		}
-		for _, item := range result.Items {
-			log.Printf("#%d-item: %+v", count, item)
-			item, ok := item.(model.Item)
-			if ok {
-				err := e.Saver.Save(item)
-				if err != nil {
-					log.Printf("数据 %v 保存出错: %s", item, err)
-				}
+
+		e.SaveItems(result.Items, &count)
+	}
+}
+
+func (e *Concurrent) SaveItems(items []interface{}, count *int) {
+	for _, item := range items {
+		dataItem, ok := item.(model.Video)
+		if ok {
+			var err error
+			dataItem, err = e.Saver.Save(dataItem)
+			if err != nil {
+				log.Printf("数据 %v 保存出错: %s", item, err)
+			} else {
+				log.Printf("#%d-item: %d(%s) %s\n", *count, dataItem.Id, dataItem.OutId, dataItem.Title)
 			}
-			count++
+			*count++
 		}
 	}
-
-	e.Saver.Close()
 }
 
 func Worker(request model.Request) (model.ParseResult, error) {

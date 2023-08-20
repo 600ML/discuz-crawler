@@ -1,13 +1,15 @@
 package config
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+
+	"gopkg.in/yaml.v2"
 )
 
 type CrawlerConfig struct {
-	Seed struct {
+	Storage string `yaml:"storage"`
+	Seed    struct {
 		Url    string `yaml:"url"`
 		Parser string `yaml:"parser"`
 	}

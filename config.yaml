@@ -1,25 +1,27 @@
+# 存储引擎
+storage: "mysql"
 # 种子页面
 seed:
-  url: 'http://www.discuz.net/forum.php'
+  url: 'https://www.4khdr.cn/forum-2-1.html'
   # 解析器(forum,section,article)
-  parser: 'forum'
+  parser: 'section'
 # 选择器
 selector:
   # 板块
-  section: '.fl_g dt a'
+  section: 'li[id=mn_N6666] a'
   # 子版块
-  sub_section: '.fl_tb .fl_g dl dt:nth-child(1) a'
+  sub_section: 'ul[id=thread_types] a'
   # 下一页按钮
-  next_page: '.nxt'
+  next_page: 'span[id=fd_page_top] .nxt'
   # 标题
-  title: '.s.xst'
+  title: 'ul[id=waterfall] .xw0 a'
   # 文章
   article: 'div[id^=post_]:nth-child(3) td[id^=postmessage]'
 # 请求头
 header:
-  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3'
-  Accept-Language: 'zh-CN,zh;q=0.9,en;q=0.8'
-  DNT: '1'
-  Host: 'www.discuz.net'
-  Referer: 'https://www.discuz.net/'
-  User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36'
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'
+  Accept-Language: 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,zh-TW;q=0.6,es-ES;q=0.5,es;q=0.4,pt-PT;q=0.3,pt;q=0.2,ru;q=0.1,vi;q=0.1,ko;q=0.1,tr;q=0.1,de;q=0.1,it;q=0.1,fr;q=0.1,pl;q=0.1,th;q=0.1,ja;q=0.1'
+  Host: 'www.4khdr.cn'
+  Referer: 'https://www.4khdr.cn/'
+  User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+  Cookie: 'hvLw_2132_saltkey=JiS5Pp95; hvLw_2132_lastvisit=1690813731; hvLw_2132_visitedfid=2; hvLw_2132_st_p=0%7C1690817387%7C734e0295c8ec7b9f4af49b23770aa1b0; _clck=td7om0|2|feb|0|1307; hvLw_2132_st_t=0%7C1692507473%7Cc5846c4ad8791fd2916bb5f670d1be93; hvLw_2132_forum_lastvisit=D_2_1692507473; hvLw_2132_sendmail=1; hvLw_2132_lastact=1692507931%09forum.php%09viewthread; hvLw_2132_viewid=tid_5102; _clsk=dfz39a|1692507933716|4|1|q.clarity.ms/collect'

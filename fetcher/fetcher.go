@@ -2,18 +2,19 @@ package fetcher
 
 import (
 	"bufio"
-	"dicuz-crawler/config"
-	"dicuz-crawler/parser"
 	"errors"
+	"io"
+	"log"
+	"net/http"
+	"strconv"
+
+	"discuz-crawler/config"
+	"discuz-crawler/parser"
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
-	"io"
-	"log"
-	"net/http"
-	"strconv"
 )
 
 func Fetch(url string) (*goquery.Document, error) {
@@ -28,7 +29,7 @@ func Fetch(url string) (*goquery.Document, error) {
 		log.Printf("请求错误: %s", err.Error())
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 	if res.StatusCode != 200 {
 		log.Printf("status code: %d %s", res.StatusCode, res.Status)
 		return nil, errors.New("status code: " + strconv.Itoa(res.StatusCode) + " " + res.Status)

@@ -1,9 +1,9 @@
 package persist
 
-import "dicuz-crawler/model"
+import "discuz-crawler/model"
 
-type Saver interface {
-	Init()
-	Save(item model.Item) error
+type Storage interface {
+	Init() error
+	Save(item model.Video) (model.Video, error)
 	Close()
 }

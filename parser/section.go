@@ -1,16 +1,17 @@
 package parser
 
 import (
-	"dicuz-crawler/config"
-	"dicuz-crawler/model"
-	"github.com/PuerkitoBio/goquery"
 	"regexp"
+
+	"discuz-crawler/config"
+	"discuz-crawler/model"
+	"github.com/PuerkitoBio/goquery"
 )
 
-var IdRe0 = regexp.MustCompile(`/thread-([\d]+)-[\d]+-[\d]+.html`)
-var IdRe1 = regexp.MustCompile(`tid=([\d]+)&`)
+var IdRe0 = regexp.MustCompile(`/thread-(\d+)-\d+-\d+.html`)
+var IdRe1 = regexp.MustCompile(`tid=(\d+)&`)
 
-func ParseSection(doc *goquery.Document, item model.Item) model.ParseResult {
+func ParseSection(doc *goquery.Document, item model.Video) model.ParseResult {
 	parseResult := model.ParseResult{}
 	doc.Find(config.Crawler.Selector.Title).Each(func(i int, selection *goquery.Selection) {
 		content, _ := selection.Html()
@@ -23,15 +24,15 @@ func ParseSection(doc *goquery.Document, item model.Item) model.ParseResult {
 		var matchResult string
 		if len(match) >= 2 {
 			matchResult = string(match[1])
-			item.Id = matchResult
+			item.OutId = matchResult
 		}
 		if len(matchResult) == 0 {
 			match = IdRe1.FindSubmatch([]byte(url))
 			if len(match) >= 2 {
 				matchResult = string(match[1])
-				item.Id = matchResult
+				item.OutId = matchResult
 			} else {
-				item.Id = "-"
+				item.OutId = "-"
 			}
 		}
 		parseResult.Items = append(parseResult.Items, content)

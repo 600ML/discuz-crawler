@@ -1,23 +1,32 @@
 package engine
 
 import (
-	"dicuz-crawler/fetcher"
-	"dicuz-crawler/model"
-	"dicuz-crawler/persist"
 	"log"
+
+	"discuz-crawler/fetcher"
+	"discuz-crawler/model"
+	"discuz-crawler/persist"
 )
 
 type Simple struct {
-	Saver persist.Saver
+	Saver persist.Storage
 }
 
 func (e Simple) Run(seeds ...model.Request) {
+	if len(seeds) == 0 {
+		log.Printf("没有种子数据\n")
+		return
+	}
+
+	if err := e.Saver.Init(); err != nil {
+		log.Printf("初始化存储器失败: %s\n", err.Error())
+		return
+	}
+
 	var requests []model.Request
 	for _, seed := range seeds {
 		requests = append(requests, seed)
 	}
-
-	e.Saver.Init()
 
 	count := 0
 	for len(requests) > 0 {
@@ -29,21 +38,25 @@ func (e Simple) Run(seeds ...model.Request) {
 			continue
 		}
 		requests = append(requests, parseResult.Requests...)
+		e.SaveItems(parseResult.Items, &count)
+	}
+	e.Saver.Close()
+}
 
-		for _, item := range parseResult.Items {
-			log.Printf("#%d-item: %+v", count, item)
-			item, ok := item.(model.Item)
-			if ok {
-				err := e.Saver.Save(item)
-				if err != nil {
-					log.Printf("数据 %v 保存出错: %s", item, err)
-				}
+func (e Simple) SaveItems(items []interface{}, count *int) {
+	for _, item := range items {
+		dataItem, ok := item.(model.Video)
+		if ok {
+			var err error
+			dataItem, err = e.Saver.Save(dataItem)
+			if err != nil {
+				log.Printf("数据 %v 保存出错: %s", item, err)
+			} else {
+				log.Printf("#%d-item: %d(%s) %s\n", *count, dataItem.Id, dataItem.OutId, dataItem.Title)
 			}
-			count++
+			*count++
 		}
 	}
-
-	e.Saver.Close()
 }
 
 func (e Simple) worker(request model.Request) (model.ParseResult, error) {

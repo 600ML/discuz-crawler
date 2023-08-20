@@ -1,12 +1,13 @@
 package parser
 
 import (
-	"dicuz-crawler/config"
-	"dicuz-crawler/model"
 	"errors"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"net/url"
+
+	"discuz-crawler/config"
+	"discuz-crawler/model"
+	"github.com/PuerkitoBio/goquery"
 )
 
 var seedUrl string
@@ -28,7 +29,7 @@ func RelativeToAbsoluteOfUrl(relativeUrl string) (absoluteUrl string, err error)
 	return fmt.Sprintf("%s://%s/%s", SeedUrlParse.Scheme, SeedUrlParse.Host, relativeUrl), nil
 }
 
-func StrToFuncOfParser(parserStr string) func(*goquery.Document, model.Item) model.ParseResult {
+func StrToFuncOfParser(parserStr string) func(*goquery.Document, model.Video) model.ParseResult {
 	switch parserStr {
 	case "forum":
 		return ParseForum
